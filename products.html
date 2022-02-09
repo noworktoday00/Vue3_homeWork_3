@@ -16,10 +16,15 @@
     <div id="app">
       <div class="container">
         <div class="text-end mt-4">
-          <button type="button" class="btn btn-dark" @click="openModal">
+          <button
+            type="button"
+            class="btn btn-dark"
+            @click="openModal('addProduct')"
+          >
             建立新產品
           </button>
         </div>
+        <!-- 第一階段建立產品列表 -->
         <table class="table mt-4">
           <thead>
             <tr>
@@ -43,10 +48,18 @@
               </td>
               <td>
                 <div class="btn-group" role="group" aria-label="Basic example">
-                  <button type="button" class="btn btn-outline-dark">
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark"
+                    @click="openModal('editProduct',item)"
+                  >
                     編輯
                   </button>
-                  <button type="button" class="btn btn-outline-danger">
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger"
+                    @click="openModal('delProduct',item)"
+                  >
                     刪除
                   </button>
                 </div>
@@ -55,13 +68,14 @@
           </tbody>
         </table>
         <!-- 這邊可以用物件轉陣列的方法Object.values()去看陣列長度 -->
-        <p>目前有 <span>{{Object.values(products).length}}</span> 項產品</p>
+        <p>目前有 <span class="text-success">{{Object.values(products).length}}</span> 項產品</p>
       </div>
-      <!-- 新增/編輯用modal -->
+      <!-- 第二+三階段 新增/編輯用modal -->
       <div
         class="modal"
         tabindex="-1"
         id="productModal"
+        ref="productModal"
         aria-labelledby="productModal"
         aria-hidden="true"
       >
@@ -69,8 +83,8 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">
-                <span>新增產品</span>
-                <span>編輯產品</span>
+                <span v-if="isNew === true">新增產品</span>
+                <span v-else>編輯產品</span>
               </h5>
               <button
                 type="button"
@@ -148,20 +162,22 @@
                   <div class="row">
                     <div class="mb-3 col-md-6">
                       <label for="origin_price" class="form-label">原價</label>
+                      <!-- 這邊要記得，要幫v-model加上數字型別!!! -->
                       <input
                         id="origin_price"
-                        v-model="tempProduct.origin_price"
-                        type="text"
+                        v-model.number="tempProduct.origin_price"
+                        type="number"
                         class="form-control"
                         placeholder="請輸入原價"
                       />
                     </div>
                     <div class="mb-3 col-md-6">
                       <label for="price" class="form-label">售價</label>
+                      <!-- 這邊也要記得，v-model要加上數字型別啊!!! -->
                       <input
                         id="price"
-                        v-model="tempProduct.price"
-                        type="text"
+                        v-model.number="tempProduct.price"
+                        type="number"
                         class="form-control"
                         placeholder="請輸入售價"
                       />
@@ -235,7 +251,55 @@
               >
                 取消
               </button>
-              <button type="button" class="btn btn-outline-dark" @click="addProduct">確定新增</button>
+              <button
+                type="button"
+                class="btn btn-outline-dark"
+                @click="updateProduct"
+              >
+                確定
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 第四階段 刪除用modal -->
+      <div
+        id="delProductModal"
+        ref="delProductModal"
+        class="modal fade"
+        tabindex="-1"
+        aria-labelledby="delProductModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content border-0">
+            <div class="modal-header bg-danger text-white">
+              <h5 id="delProductModalLabel" class="modal-title">
+                <span>刪除產品</span>
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              是否刪除
+              <strong class="text-danger">{{ tempProduct.title }}</strong>
+              商品(刪除後將無法恢復)。
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+              >
+                取消
+              </button>
+              <button type="button" class="btn btn-danger" @click="delProduct">
+                確認刪除
+              </button>
             </div>
           </div>
         </div>
